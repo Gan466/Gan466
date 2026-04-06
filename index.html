@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TikBooster – SMM Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0a0f;--surface:#13131c;--card:#1a1a28;--border:#2a2a3d;
+  --accent:#fe2c55;--accent2:#25f4ee;--accent3:#9b59b6;
+  --text:#f0f0f5;--muted:#6b6b85;--success:#00e676;--warning:#ffab00;--danger:#ff1744;
+  --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.auth-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;
+  background:radial-gradient(ellipse at 30% 50%,rgba(254,44,85,.08),transparent 60%),
+             radial-gradient(ellipse at 70% 20%,rgba(37,244,238,.05),transparent 60%),var(--bg);}
+.auth-box{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;margin:16px;}
+.auth-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:32px;}
+.auth-logo-icon{width:44px;height:44px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.auth-logo-text{font-family:var(--fh);font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.auth-tabs{display:flex;background:var(--card);border-radius:10px;padding:4px;margin-bottom:24px;}
+.auth-tab{flex:1;text-align:center;padding:9px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:.2s;user-select:none;}
+.auth-tab.active{background:var(--accent);color:#fff;}
+.auth-form{display:none;}.auth-form.active{display:block;}
+.auth-form h2{font-family:var(--fh);font-size:20px;margin-bottom:4px;}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.sidebar{position:fixed;left:0;top:0;width:240px;height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;}
+.logo{padding:28px 24px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.logo-icon{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.logo-text{font-family:var(--fh);font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav{flex:1;padding:16px 12px;overflow-y:auto;}
+.nav-sec{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;padding:8px 12px;margin-top:8px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;cursor:pointer;transition:.2s;font-size:14px;color:var(--muted);margin-bottom:2px;user-select:none;}
+.nav-item:hover{background:var(--card);color:var(--text);}
+.nav-item.active{background:linear-gradient(135deg,rgba(254,44,85,.15),rgba(37,244,238,.08));color:var(--text);border:1px solid rgba(254,44,85,.2);}
+.nav-icon{width:20px;text-align:center;font-size:16px;}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.sb-footer{padding:16px;border-top:1px solid var(--border);}
+.user-chip{display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border-radius:10px;margin-bottom:8px;}
+.user-av{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent3));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+.user-nm{font-size:13px;font-weight:600;}.user-rl{font-size:11px;color:var(--muted);}
+.logout-btn{width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px;border-radius:8px;cursor:pointer;font-size:12px;transition:.2s;font-family:var(--fb);}
+.logout-btn:hover{border-color:var(--danger);color:var(--danger);}
+.main{margin-left:240px;min-height:100vh;}
+.topbar{height:64px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:16px;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:var(--fh);font-size:18px;font-weight:700;flex:1;}
+.wal-badge{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);padding:8px 14px;border-radius:10px;font-size:13px;}
+.wal-amt{font-weight:700;color:var(--accent2);}
+.content{padding:28px;}
+.page{display:none;}.page.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.btn{padding:9px 18px;border-radius:9px;font-family:var(--fb);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important;}
+.btn-primary{background:var(--accent);color:#fff;}.btn-primary:hover:not(:disabled){background:#e0203d;transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-ghost:hover:not(:disabled){color:var(--text);border-color:var(--accent);}
+.btn-sm{padding:6px 12px;font-size:12px;}.btn-full{width:100%;padding:13px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;opacity:.08;transform:translate(20px,-20px);}
+.sc1::before{background:var(--accent)}.sc2::before{background:var(--accent2)}.sc3::before{background:var(--accent3)}.sc4::before{background:var(--warning)}
+.stat-lbl{font-size:12px;color:var(--muted);margin-bottom:8px;}
+.stat-val{font-family:var(--fh);font-size:26px;font-weight:800;}
+.stat-sub{font-size:11px;color:var(--success);margin-top:4px;}
+.stat-ico{position:absolute;top:20px;right:20px;font-size:22px;opacity:.5;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.sec-title{font-family:var(--fh);font-size:16px;font-weight:700;}
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--surface);}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+td{padding:13px 16px;font-size:13px;border-top:1px solid var(--border);}
+tr:hover td{background:rgba(255,255,255,.02);}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge.completed{background:rgba(0,230,118,.1);color:var(--success);}
+.badge.pending{background:rgba(255,171,0,.1);color:var(--warning);}
+.badge.processing{background:rgba(37,244,238,.1);color:var(--accent2);}
+.badge.cancelled{background:rgba(255,23,68,.1);color:var(--danger);}
+.bdot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.pt{display:inline-flex;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;}
+.pt.tiktok{background:rgba(254,44,85,.15);color:var(--accent);}
+.pt.instagram{background:rgba(155,89,182,.15);color:var(--accent3);}
+.pt.youtube{background:rgba(255,71,71,.15);color:#ff4747;}
+.pt.facebook{background:rgba(66,103,178,.15);color:#4267B2;}
+.pt.twitter{background:rgba(29,161,242,.15);color:#1da1f2;}
+.pt.other{background:rgba(255,255,255,.05);color:var(--muted);}
+.fg{margin-bottom:16px;}
+.fl{font-size:12px;color:var(--muted);margin-bottom:6px;display:block;font-weight:500;}
+.fi{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-family:var(--fb);font-size:14px;transition:.2s;outline:none;}
+.fi:focus{border-color:var(--accent);}
+.fs{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px;}
+.price-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:12px;}
+.pr{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;}
+.pr.total{font-weight:700;font-size:15px;border-top:1px solid var(--border);padding-top:10px;margin-top:4px;}
+.pr .v{color:var(--accent2);}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+.svc-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:.2s;position:relative;}
+.svc-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 30px rgba(254,44,85,.1);}
+.svc-card.sel{border-color:var(--accent);background:rgba(254,44,85,.05);}
+.svc-icon{font-size:28px;margin-bottom:10px;}
+.svc-name{font-weight:600;font-size:14px;margin-bottom:4px;}
+.svc-desc{font-size:12px;color:var(--muted);}
+.svc-price{position:absolute;top:14px;right:14px;background:rgba(254,44,85,.15);color:var(--accent);font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;}
+.wal-hero{background:linear-gradient(135deg,var(--accent),var(--accent3));border-radius:18px;padding:32px;margin-bottom:24px;position:relative;overflow:hidden;}
+.wal-hero::after{content:'◈';position:absolute;right:30px;top:50%;transform:translateY(-50%);font-size:120px;opacity:.08;pointer-events:none;}
+.topup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.topup-opt{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:.2s;user-select:none;}
+.topup-opt:hover{border-color:var(--accent);background:rgba(254,44,85,.05);}
+.topup-amt{font-family:var(--fh);font-size:22px;font-weight:800;}
+.topup-bonus{font-size:11px;color:var(--success);margin-top:4px;}
+.tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.tab{padding:9px 18px;border-radius:9px;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:13px;cursor:pointer;transition:.2s;font-family:var(--fb);user-select:none;}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px;width:90%;max-width:440px;animation:fadeIn .25s ease;position:relative;}
+.modal-x{position:absolute;top:16px;right:16px;background:var(--surface);border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
+.modal-title{font-family:var(--fh);font-size:20px;font-weight:700;margin-bottom:4px;}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;display:flex;align-items:center;gap:10px;animation:slideIn .3s ease;box-shadow:0 8px 30px rgba(0,0,0,.4);min-width:260px;pointer-events:auto;transition:opacity .3s;}
+.toast.success{border-left:3px solid var(--success);}
+.toast.error{border-left:3px solid var(--danger);}
+.toast.info{border-left:3px solid var(--accent2);}
+@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+.empty{text-align:center;padding:48px;color:var(--muted);}
+.empty-ico{font-size:48px;margin-bottom:12px;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;vertical-align:middle;margin-right:4px;}
+@keyframes rot{to{transform:rotate(360deg)}}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.api-key-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.api-key-val{flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 14px;font-family:monospace;font-size:12px;color:var(--muted);word-break:break-all;}
+.code-blk{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:14px;font-family:monospace;font-size:12px;color:var(--accent2);overflow-x:auto;margin-top:8px;white-space:pre;}
+@media(max-width:900px){.stats-grid,.two-col{grid-template-columns:1fr 1fr;}.svc-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.sidebar{display:none;}.main{margin-left:0;}.stats-grid,.svc-grid,.two-col{grid-template-columns:1fr;}.topup-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- CONFIRM ORDER MODAL -->
+<div class="overlay" id="confirmModal">
+  <div class="modal">
+    <div class="modal-x" id="confirmClose">✕</div>
+    <div class="modal-title">Confirm Order</div>
+    <div class="modal-sub">Review your order before placing</div>
+    <div id="confirmBody"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-ghost" style="flex:1" id="confirmCancel">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" id="confirmPlace">✓ Place Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOPUP MODAL -->
+<div class="overlay" id="topupModal">
+  <div class="modal">
+    <div class="modal-x" id="topupClose">✕</div>
+    <div class="modal-title">💳 Top Up Wallet</div>
+    <div class="modal-sub">Pay securely via Paystack</div>
+    <div class="fg"><label class="fl">Amount (GHS)</label><input class="fi" type="number" id="topupAmt" placeholder="50" min="5"/></div>
+    <button class="btn btn-primary btn-full" id="payBtn">Pay with Paystack</button>
+    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;">🔒 Secured by Paystack · SSL Encrypted</p>
+  </div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">🚀</div>
+        <div class="auth-logo-text">TikBooster</div>
+      </div>
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tabLogin">Sign In</div>
+        <div class="auth-tab" id="tabReg">Sign Up</div>
+      </div>
+      <div class="auth-form active" id="formLogin">
+        <h2>Welcome back</h2>
+        <p class="auth-sub">Sign in to manage your orders</p>
+        <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="lEmail" placeholder="you@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="lPass" placeholder="••••••••"/></div>
+        <button class="btn btn-primary btn-full" id="loginBtn">Sign In →</button>
+      </div>
+      <div class="auth-form" id="formReg">
+        <h2>Create account</h2>
+        <p class="auth-sub">Start boosting your social media today</p>
+        <div class="fg"><label class="fl">Full Name</label><input class="fi" type="text" id="rName" placeholder="Your name"/></div>
+        <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="rEmail" placeholder="you@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="rPass" placeholder="Min 6 characters"/></div>
+        <button class="btn btn-primary btn-full" id="regBtn">Create Account →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="appScreen" style="display:none;">
+  <div class="sidebar">
+    <div class="logo"><div class="logo-icon">🚀</div><div class="logo-text">TikBooster</div></div>
+    <nav class="nav">
+      <div class="nav-sec">Main</div>
+      <div class="nav-item active" data-page="dashboard"><span class="nav-icon">📊</span>Dashboard</div>
+      <div class="nav-item" data-page="buy"><span class="nav-icon">🛒</span>Buy Services</div>
+      <div class="nav-item" data-page="orders"><span class="nav-icon">📦</span>My Orders<span class="nav-badge" id="pendingBadge">0</span></div>
+      <div class="nav-sec">Finance</div>
+      <div class="nav-item" data-page="wallet"><span class="nav-icon">💰</span>Wallet</div>
+      <div class="nav-sec">Developer</div>
+      <div class="nav-item" data-page="api"><span class="nav-icon">⚡</span>API Access</div>
+      <div class="nav-sec" id="adminSec" style="display:none;">Admin</div>
+      <div class="nav-item" data-page="admin" id="adminNav" style="display:none;"><span class="nav-icon">🛠️</span>Admin Panel</div>
+    </nav>
+    <div class="sb-footer">
+      <div class="user-chip">
+        <div class="user-av" id="userAv">U</div>
+        <div><div class="user-nm" id="userName">–</div><div class="user-rl" id="userRole">Member</div></div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">🚪 Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="wal-badge">💰 GHS <span class="wal-amt" id="walDisp">0.00</span></div>
+        <button class="btn btn-primary btn-sm" id="topupOpenBtn">+ Top Up</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card sc1"><div class="stat-lbl">Total Orders</div><div class="stat-val" id="s-total">0</div><div class="stat-sub">All time</div><div class="stat-ico">📦</div></div>
+          <div class="stat-card sc2"><div class="stat-lbl">Wallet Balance</div><div class="stat-val" id="s-wal">GHS 0</div><div class="stat-sub">Available</div><div class="stat-ico">💰</div></div>
+          <div class="stat-card sc3"><div class="stat-lbl">Completed</div><div class="stat-val" id="s-comp">0</div><div class="stat-sub" id="s-rate">0% success</div><div class="stat-ico">✅</div></div>
+          <div class="stat-card sc4"><div class="stat-lbl">Pending</div><div class="stat-val" id="s-pend">0</div><div class="stat-sub">Processing</div><div class="stat-ico">⏳</div></div>
+        </div>
+        <div class="sec-hdr"><div class="sec-title">Recent Orders</div><button class="btn btn-ghost btn-sm" id="viewAllBtn">View All →</button></div>
+        <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Service</th><th>Platform</th><th>Qty</th><th>Cost</th><th>Status</th></tr></thead>
+        <tbody id="recentTbl"><tr><td colspan="6"><div class="empty"><div class="empty-ico">📭</div>No orders yet</div></td></tr></tbody></table></div>
+      </div>
+
+      <!-- BUY -->
+      <div class="page" id="page-buy">
+        <div class="tabs" id="platTabs">
+          <button class="tab active" data-plat="all">All</button>
+          <button class="tab" data-plat="tiktok">🎵 TikTok</button>
+          <button class="tab" data-plat="instagram">📸 Instagram</button>
+          <button class="tab" data-plat="youtube">▶️ YouTube</button>
+          <button class="tab" data-plat="facebook">👤 Facebook</button>
+          <button class="tab" data-plat="twitter">🐦 Twitter</button>
+        </div>
+        <div class="svc-grid" id="svcGrid"><div style="grid-column:1/-1" class="empty"><div class="spin"></div> Loading services...</div></div>
+        <div class="panel" id="orderForm" style="display:none;">
+          <div class="sec-title" style="margin-bottom:16px;">📋 Order Details</div>
+          <div class="fg"><label class="fl">Post / Profile Link</label><input class="fi" id="oLink" placeholder="https://tiktok.com/@username"/></div>
+          <div class="fg"><label class="fl">Quantity</label><input class="fi" type="number" id="oQty" placeholder="e.g. 1000"/></div>
+          <div id="priceDisp" style="display:none;">
+            <div class="price-box">
+              <div class="pr"><span>Service</span><span class="v" id="p-svc">–</span></div>
+              <div class="pr"><span>Quantity</span><span class="v" id="p-qty">–</span></div>
+              <div class="pr"><span>Rate /1000</span><span class="v" id="p-rate">–</span></div>
+              <div class="pr total"><span>Total</span><span class="v" id="p-total">–</span></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:14px;">
+              <button class="btn btn-ghost" style="flex:1" id="clearOrderBtn">Clear</button>
+              <button class="btn btn-primary" style="flex:1" id="openConfirmBtn">Place Order →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="page" id="page-orders">
+        <div class="sec-hdr">
+          <div class="sec-title">My Orders</div>
+          <div style="display:flex;gap:8px;">
+            <select class="fs" style="width:auto;padding:8px 12px;font-size:12px;" id="orderFilter">
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" id="refreshOrdersBtn">🔄</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Service</th><th>Platform</th><th>Link</th><th>Qty</th><th>Cost</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="ordersTbl"></tbody></table></div>
+      </div>
+
+      <!-- WALLET -->
+      <div class="page" id="page-wallet">
+        <div class="wal-hero">
+          <div style="font-size:13px;opacity:.8;margin-bottom:6px;">Available Balance</div>
+          <div style="font-family:var(--fh);font-size:42px;font-weight:800;">GHS <span id="walBal">0.00</span></div>
+          <div style="margin-top:20px;"><button class="btn" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3);" id="walTopupBtn">+ Top Up Wallet</button></div>
+        </div>
+        <div class="sec-hdr"><div class="sec-title">Quick Top Up</div></div>
+        <div class="topup-grid">
+          <div class="topup-opt" data-amount="20"><div class="topup-amt">GHS 20</div><div class="topup-bonus">Starter</div></div>
+          <div class="topup-opt" data-amount="50"><div class="topup-amt">GHS 50</div><div class="topup-bonus">Popular</div></div>
+          <div class="topup-opt" data-amount="100"><div class="topup-amt">GHS 100</div><div class="topup-bonus">+GHS 5 bonus</div></div>
+          <div class="topup-opt" data-amount="200"><div class="topup-amt">GHS 200</div><div class="topup-bonus">+GHS 15 bonus</div></div>
+          <div class="topup-opt" data-amount="500"><div class="topup-amt">GHS 500</div><div class="topup-bonus">+GHS 50 bonus</div></div>
+          <div class="topup-opt" data-amount="1000"><div class="topup-amt">GHS 1000</div><div class="topup-bonus">+GHS 120 bonus</div></div>
+        </div>
+        <div class="sec-hdr"><div class="sec-title">Transaction History</div><button class="btn btn-ghost btn-sm" id="refreshTxBtn">🔄</button></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Type</th><th>Balance After</th></tr></thead>
+        <tbody id="txTbl"><tr><td colspan="5"><div class="empty"><div class="empty-ico">📄</div>No transactions yet</div></td></tr></tbody></table></div>
+      </div>
+
+      <!-- API -->
+      <div class="page" id="page-api">
+        <div class="panel">
+          <div class="sec-title">🔑 Your API Key</div>
+          <p style="font-size:13px;color:var(--muted);margin:8px 0 14px;">Share with resellers to let them place orders via API.</p>
+          <div class="api-key-row">
+            <div class="api-key-val" id="apiKeyEl">tb_••••••••••••••••••••••••••••••••••••</div>
+            <button class="btn btn-ghost btn-sm" id="revealKeyBtn">👁</button>
+            <button class="btn btn-ghost btn-sm" id="copyKeyBtn">📋</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="sec-title">📖 How to Use</div>
+          <p style="font-size:13px;color:var(--muted);margin:10px 0 4px;">Your TikBooster panel is live at:</p>
+          <div class="code-blk" id="siteUrl">https://tikbooster.vercel.app</div>
+        </div>
+      </div>
+
+      <!-- ADMIN -->
+      <div class="page" id="page-admin">
+        <div class="tabs" id="adminTabs">
+          <button class="tab active" data-atab="overview">📊 Overview</button>
+          <button class="tab" data-atab="users">👥 Users</button>
+          <button class="tab" data-atab="services">⚙️ Services</button>
+          <button class="tab" data-atab="allorders">📦 All Orders</button>
+        </div>
+        <div id="adminPane-overview">
+          <div class="stats-grid">
+            <div class="stat-card sc1"><div class="stat-lbl">Revenue</div><div class="stat-val">GHS <span id="a-rev">0</span></div><div class="stat-ico">💵</div></div>
+            <div class="stat-card sc2"><div class="stat-lbl">Users</div><div class="stat-val" id="a-users">0</div><div class="stat-ico">👥</div></div>
+            <div class="stat-card sc3"><div class="stat-lbl">Orders</div><div class="stat-val" id="a-orders">0</div><div class="stat-ico">📦</div></div>
+            <div class="stat-card sc4"><div class="stat-lbl">Services</div><div class="stat-val" id="a-svcs">0</div><div class="stat-ico">⚡</div></div>
+          </div>
+          <div class="two-col">
+            <div class="panel">
+              <div class="sec-title" style="margin-bottom:14px;">Add Balance to User</div>
+              <div class="fg"><label class="fl">User Email</label><input class="fi" id="a-email" placeholder="user@email.com"/></div>
+              <div class="fg"><label class="fl">Amount (GHS)</label><input class="fi" type="number" id="a-amt" placeholder="50"/></div>
+              <button class="btn btn-primary" id="addBalBtn">Add Balance</button>
+            </div>
+            <div class="panel">
+              <div class="sec-title" style="margin-bottom:14px;">Add Service</div>
+              <div class="fg"><label class="fl">Name</label><input class="fi" id="svc-name" placeholder="TikTok Followers"/></div>
+              <div class="fg"><label class="fl">Platform</label>
+                <select class="fs" id="svc-plat"><option value="tiktok">TikTok</option><option value="instagram">Instagram</option><option value="youtube">YouTube</option><option value="facebook">Facebook</option><option value="twitter">Twitter</option></select>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                <div class="fg"><label class="fl">Rate/1K GHS</label><input class="fi" type="number" id="svc-rate" placeholder="0.50"/></div>
+                <div class="fg"><label class="fl">Min</label><input class="fi" type="number" id="svc-min" placeholder="100"/></div>
+                <div class="fg"><label class="fl">Max</label><input class="fi" type="number" id="svc-max" placeholder="500000"/></div>
+              </div>
+              <button class="btn btn-primary" id="saveSvcBtn">Save Service</button>
+            </div>
+          </div>
+        </div>
+        <div id="adminPane-users" style="display:none;"><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Balance</th><th>Orders</th><th>Joined</th></tr></thead><tbody id="a-usersTbl"></tbody></table></div></div>
+        <div id="adminPane-services" style="display:none;"><div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Service</th><th>Platform</th><th>Rate/1K</th><th>Min</th><th>Max</th><th></th></tr></thead><tbody id="a-svcsTbl"></tbody></table></div></div>
+        <div id="adminPane-allorders" style="display:none;"><div class="tbl-wrap"><table><thead><tr><th>ID</th><th>User</th><th>Service</th><th>Qty</th><th>Cost</th><th>Status</th><th>Actions</th></tr></thead><tbody id="a-ordersTbl"></tbody></table></div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+'use strict';
+
+// ─── SUPABASE CONFIG ──────────────────────────
+const SB_URL  = 'https://hjhjjswfimxtggwgluno.supabase.co';
+const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqaGpqc3dmaW14dGdnd2dsdW5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDA5MDEsImV4cCI6MjA5MTAxNjkwMX0.YdQnf91xTxsiMKgmSdyWvZpPuu80jMYnGDtiboH7tY8';
+const PS_KEY  = 'pk_live_6ef04f57f3d2e9d8da515be0570c939adee88967';
+const ADMIN_EMAIL = 'wemegahr2@gmail.com';
+
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+// ─── STATE ────────────────────────────────────
+let me = null, session = null;
+let svcs = [], myOrders = [], selSvc = null, curPlat = 'all', userApiKey = '';
+
+// ─── HELPERS ──────────────────────────────────
+const $ = id => document.getElementById(id);
+const gv = id => $( id ) ? $(id).value.trim() : '';
+
+function toast(msg, type='info'){
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span>${icons[type]}</span><span>${msg}</span>`;
+  $('toastWrap').appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';},3200);
+  setTimeout(()=>el.remove(),3500);
+}
+
+function setWallet(n){
+  const val=parseFloat(n||0).toFixed(2);
+  $('walDisp').textContent=val;
+  if($('walBal'))$('walBal').textContent=val;
+  $('s-wal').textContent='GHS '+parseFloat(n||0).toFixed(0);
+}
+
+function setBtn(id,loading,text){
+  const b=$(id); if(!b)return;
+  b.disabled=loading;
+  b.innerHTML=loading?`<span class="spin"></span>${text}...`:text;
+}
+
+function openModal(id){$(id).classList.add('open');}
+function closeModal(id){$(id).classList.remove('open');}
+
+// ─── SUPABASE DB HELPERS ──────────────────────
+async function dbGet(table, filters={}){
+  let q = sb.from(table).select('*');
+  for(const [k,v] of Object.entries(filters)) q=q.eq(k,v);
+  const {data,error}=await q;
+  if(error) throw error;
+  return data||[];
+}
+
+async function dbInsert(table, row){
+  const {data,error}=await sb.from(table).insert(row).select().single();
+  if(error) throw error;
+  return data;
+}
+
+async function dbUpdate(table, id, updates){
+  const {error}=await sb.from(table).update(updates).eq('id',id);
+  if(error) throw error;
+}
+
+async function dbUpdateWhere(table, field, val, updates){
+  const {error}=await sb.from(table).update(updates).eq(field,val);
+  if(error) throw error;
+}
+
+// ─── SETUP DB TABLES (auto-create via SQL) ────
+async function ensureTables(){
+  // We call Supabase RPC to create tables if not exist
+  // Tables: profiles, services, orders, transactions
+  try {
+    await sb.rpc('setup_tikbooster').catch(()=>{});
+  } catch(_){}
+}
+
+// ─── AUTH ─────────────────────────────────────
+$('tabLogin').addEventListener('click',()=>{
+  $('tabLogin').classList.add('active'); $('tabReg').classList.remove('active');
+  $('formLogin').classList.add('active'); $('formReg').classList.remove('active');
+});
+$('tabReg').addEventListener('click',()=>{
+  $('tabReg').classList.add('active'); $('tabLogin').classList.remove('active');
+  $('formReg').classList.add('active'); $('formLogin').classList.remove('active');
+});
+
+$('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+$('rPass').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
+$('loginBtn').addEventListener('click',doLogin);
+$('regBtn').addEventListener('click',doRegister);
+
+async function doLogin(){
+  const email=gv('lEmail'), password=gv('lPass');
+  if(!email||!password){toast('Please enter email and password','error');return;}
+  setBtn('loginBtn',true,'Sign In →');
+  const {data,error}=await sb.auth.signInWithPassword({email,password});
+  setBtn('loginBtn',false,'Sign In →');
+  if(error){toast(error.message||'Login failed','error');return;}
+  session=data.session;
+  await loadProfile(data.user);
+  bootApp();
+  toast('Welcome back! 👋','success');
+}
+
+async function doRegister(){
+  const name=gv('rName'), email=gv('rEmail'), password=gv('rPass');
+  if(!name){toast('Please enter your name','error');return;}
+  if(!email){toast('Please enter your email','error');return;}
+  if(!password||password.length<6){toast('Password must be at least 6 characters','error');return;}
+  setBtn('regBtn',true,'Create Account →');
+  const {data,error}=await sb.auth.signUp({email,password,options:{data:{full_name:name}}});
+  setBtn('regBtn',false,'Create Account →');
+  if(error){toast(error.message||'Registration failed','error');return;}
+  if(data.user){
+    // Create profile row
+    try {
+      await sb.from('profiles').upsert({
+        id: data.user.id,
+        email: email,
+        name: name,
+        wallet: 0,
+        role: email===ADMIN_EMAIL?'admin':'user',
+        api_key: 'tb_'+Math.random().toString(36).substr(2,32)
+      });
+    } catch(_){}
+    session=data.session;
+    await loadProfile(data.user);
+    bootApp();
+    toast('Account created! Welcome to TikBooster 🎉','success');
+  } else {
+    toast('Check your email to confirm your account, then sign in.','info');
+  }
+}
+
+async function loadProfile(user){
+  // Get or create profile
+  let {data}=await sb.from('profiles').select('*').eq('id',user.id).single();
+  if(!data){
+    const nm=user.user_metadata?.full_name||user.email.split('@')[0];
+    const {data:np}=await sb.from('profiles').insert({
+      id:user.id, email:user.email, name:nm, wallet:0,
+      role:user.email===ADMIN_EMAIL?'admin':'user',
+      api_key:'tb_'+Math.random().toString(36).substr(2,32)
+    }).select().single();
+    data=np;
+  }
+  me=data;
+  userApiKey=me?.api_key||'';
+}
+
+$('logoutBtn').addEventListener('click',async()=>{
+  await sb.auth.signOut();
+  me=null; session=null;
+  $('appScreen').style.display='none';
+  $('authScreen').style.display='block';
+  toast('Signed out','info');
+});
+
+// ─── BOOT ─────────────────────────────────────
+function bootApp(){
+  $('authScreen').style.display='none';
+  $('appScreen').style.display='block';
+  $('userName').textContent=me?.name||'User';
+  $('userRole').textContent=me?.role==='admin'?'Admin':'Member';
+  $('userAv').textContent=(me?.name||'U').charAt(0).toUpperCase();
+  if(me?.role==='admin'){
+    $('adminSec').style.display='';
+    $('adminNav').style.display='';
+  }
+  setWallet(me?.wallet||0);
+  $('apiKeyEl').textContent=userApiKey?userApiKey.replace(/./g,'•'):'No key';
+  $('siteUrl').textContent=window.location.href;
+  loadServices();
+  loadOrders();
+}
+
+// Check existing session on load
+sb.auth.getSession().then(async({data})=>{
+  if(data.session){
+    session=data.session;
+    await loadProfile(data.session.user);
+    bootApp();
+  }
+});
+
+// ─── NAVIGATION ───────────────────────────────
+const titles={dashboard:'Dashboard',buy:'Buy Services',orders:'My Orders',wallet:'Wallet',api:'API Access',admin:'Admin Panel'};
+
+document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
+  item.addEventListener('click',()=>navigateTo(item.dataset.page));
+});
+$('viewAllBtn').addEventListener('click',()=>navigateTo('orders'));
+
+function navigateTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=$('page-'+page); if(pg)pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const ni=document.querySelector(`.nav-item[data-page="${page}"]`); if(ni)ni.classList.add('active');
+  $('pageTitle').textContent=titles[page]||page;
+  if(page==='dashboard')loadDashboard();
+  if(page==='orders')loadOrders();
+  if(page==='wallet')loadWallet();
+  if(page==='admin')loadAdminStats();
+}
+
+// ─── SERVICES ─────────────────────────────────
+async function loadServices(){
+  try {
+    const {data}=await sb.from('services').select('*').eq('active',true).order('platform');
+    svcs=data||[];
+    // If no services yet add defaults
+    if(svcs.length===0) await seedDefaultServices();
+    renderServices(curPlat);
+  } catch(e){ renderServices(curPlat); }
+}
+
+async function seedDefaultServices(){
+  const defaults=[
+    {name:'TikTok Followers',platform:'tiktok',rate:0.50,min_qty:100,max_qty:500000,icon:'👥',active:true},
+    {name:'TikTok Likes',platform:'tiktok',rate:0.20,min_qty:100,max_qty:1000000,icon:'❤️',active:true},
+    {name:'TikTok Views',platform:'tiktok',rate:0.05,min_qty:1000,max_qty:10000000,icon:'👁️',active:true},
+    {name:'TikTok Shares',platform:'tiktok',rate:0.30,min_qty:100,max_qty:100000,icon:'🔁',active:true},
+    {name:'Instagram Followers',platform:'instagram',rate:0.60,min_qty:100,max_qty:300000,icon:'👤',active:true},
+    {name:'Instagram Likes',platform:'instagram',rate:0.25,min_qty:50,max_qty:500000,icon:'💜',active:true},
+    {name:'Instagram Views',platform:'instagram',rate:0.08,min_qty:500,max_qty:5000000,icon:'🎬',active:true},
+    {name:'YouTube Subscribers',platform:'youtube',rate:1.20,min_qty:100,max_qty:100000,icon:'🔔',active:true},
+    {name:'YouTube Views',platform:'youtube',rate:0.10,min_qty:1000,max_qty:10000000,icon:'▶️',active:true},
+    {name:'Facebook Page Likes',platform:'facebook',rate:0.80,min_qty:100,max_qty:100000,icon:'👍',active:true},
+    {name:'Twitter Followers',platform:'twitter',rate:0.55,min_qty:100,max_qty:200000,icon:'🐦',active:true},
+    {name:'Twitter Likes',platform:'twitter',rate:0.15,min_qty:100,max_qty:500000,icon:'🤍',active:true},
+  ];
+  const {data}=await sb.from('services').insert(defaults).select();
+  svcs=data||defaults;
+}
+
+$('platTabs').addEventListener('click',e=>{
+  const btn=e.target.closest('.tab'); if(!btn)return;
+  document.querySelectorAll('#platTabs .tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  curPlat=btn.dataset.plat;
+  renderServices(curPlat);
+});
+
+function renderServices(plat){
+  const grid=$('svcGrid');
+  const list=plat==='all'?svcs:svcs.filter(s=>s.platform===plat);
+  if(!list.length){grid.innerHTML=`<div style="grid-column:1/-1" class="empty"><div class="empty-ico">🔍</div>No services found</div>`;return;}
+  grid.innerHTML=list.map(s=>`
+    <div class="svc-card${selSvc&&selSvc.id==s.id?' sel':''}" data-svcid="${s.id}">
+      <div class="svc-icon">${s.icon||'⚡'}</div>
+      <div class="svc-name">${s.name}</div>
+      <div class="svc-desc">${s.platform} · Min ${s.min_qty}</div>
+      <div class="svc-price">GHS ${parseFloat(s.rate).toFixed(2)}/1K</div>
+    </div>`).join('');
+}
+
+$('svcGrid').addEventListener('click',e=>{
+  const card=e.target.closest('.svc-card[data-svcid]'); if(!card)return;
+  selSvc=svcs.find(s=>s.id==card.dataset.svcid);
+  renderServices(curPlat);
+  $('orderForm').style.display='block';
+  $('priceDisp').style.display='none';
+  $('oLink').value=''; $('oQty').value='';
+  $('orderForm').scrollIntoView({behavior:'smooth'});
+});
+
+$('oQty').addEventListener('input',calcPrice);
+
+function calcPrice(){
+  if(!selSvc)return;
+  const qty=parseInt($('oQty').value)||0;
+  if(qty<1){$('priceDisp').style.display='none';return;}
+  const total=(qty/1000)*parseFloat(selSvc.rate);
+  $('p-svc').textContent=selSvc.name;
+  $('p-qty').textContent=qty.toLocaleString();
+  $('p-rate').textContent='GHS '+parseFloat(selSvc.rate).toFixed(4);
+  $('p-total').textContent='GHS '+total.toFixed(2);
+  $('priceDisp').style.display='block';
+}
+
+$('clearOrderBtn').addEventListener('click',()=>{
+  selSvc=null; $('orderForm').style.display='none'; renderServices(curPlat);
+});
+
+$('openConfirmBtn').addEventListener('click',()=>{
+  if(!selSvc)return;
+  const qty=parseInt($('oQty').value)||0, link=$('oLink').value.trim();
+  if(!link){toast('Please enter a post or profile link','error');return;}
+  if(qty<selSvc.min_qty){toast(`Minimum quantity is ${selSvc.min_qty}`,'error');return;}
+  if(qty>selSvc.max_qty){toast(`Maximum quantity is ${selSvc.max_qty}`,'error');return;}
+  const cost=(qty/1000)*parseFloat(selSvc.rate);
+  const bal=parseFloat(me?.wallet||0);
+  if(cost>bal){toast('Insufficient balance. Please top up your wallet.','error');return;}
+  $('confirmBody').innerHTML=`
+    <div class="price-box">
+      <div class="pr"><span>Service</span><span class="v">${selSvc.name}</span></div>
+      <div class="pr"><span>Link</span><span class="v" style="font-size:11px;word-break:break-all;max-width:220px;text-align:right">${link}</span></div>
+      <div class="pr"><span>Quantity</span><span class="v">${qty.toLocaleString()}</span></div>
+      <div class="pr total"><span>Total</span><span class="v">GHS ${cost.toFixed(2)}</span></div>
+    </div>
+    <div class="pr" style="margin-top:8px;font-size:12px;color:var(--muted);">
+      <span>Balance after</span><span style="color:var(--warning)">GHS ${(bal-cost).toFixed(2)}</span>
+    </div>`;
+  openModal('confirmModal');
+});
+
+$('confirmClose').addEventListener('click',()=>closeModal('confirmModal'));
+$('confirmCancel').addEventListener('click',()=>closeModal('confirmModal'));
+
+$('confirmPlace').addEventListener('click',async()=>{
+  const btn=$('confirmPlace');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Placing...';
+  const qty=parseInt($('oQty').value), link=$('oLink').value.trim();
+  const cost=(qty/1000)*parseFloat(selSvc.rate);
+  try {
+    // Deduct wallet
+    const newBal=parseFloat(me.wallet)-cost;
+    await dbUpdateWhere('profiles','id',me.id,{wallet:newBal});
+    // Insert order
+    const orderId='TB'+Date.now().toString(36).toUpperCase().slice(-6);
+    await sb.from('orders').insert({
+      order_id:orderId, user_id:me.id, service_id:selSvc.id,
+      service_name:selSvc.name, platform:selSvc.platform,
+      link, quantity:qty, cost, status:'pending'
+    });
+    // Insert transaction
+    await sb.from('transactions').insert({
+      user_id:me.id, description:'Order: '+selSvc.name,
+      amount:cost, type:'debit', balance_after:newBal
+    });
+    me.wallet=newBal;
+    setWallet(me.wallet);
+    closeModal('confirmModal');
+    toast('Order '+orderId+' placed! 🎉','success');
+    selSvc=null; $('orderForm').style.display='none'; renderServices(curPlat);
+    loadOrders();
+  } catch(e){
+    toast('Order failed: '+e.message,'error');
+  }
+  btn.disabled=false; btn.innerHTML='✓ Place Order';
+});
+
+// ─── ORDERS ───────────────────────────────────
+async function loadOrders(){
+  if(!me)return;
+  try {
+    const {data}=await sb.from('orders').select('*').eq('user_id',me.id).order('created_at',{ascending:false});
+    myOrders=data||[];
+    renderOrders(); updateDashStats();
+  } catch(e){ console.error(e); }
+}
+
+$('orderFilter').addEventListener('change',renderOrders);
+$('refreshOrdersBtn').addEventListener('click',loadOrders);
+
+function renderOrders(){
+  const f=$('orderFilter').value;
+  const list=f==='all'?myOrders:myOrders.filter(o=>o.status===f);
+  const tb=$('ordersTbl');
+  if(!list.length){tb.innerHTML='<tr><td colspan="8"><div class="empty"><div class="empty-ico">📭</div>No orders found</div></td></tr>';return;}
+  tb.innerHTML=list.map(o=>`
+    <tr>
+      <td><code style="color:var(--accent2);font-size:12px">${o.order_id}</code></td>
+      <td>${o.service_name}</td>
+      <td><span class="pt ${o.platform||'other'}">${o.platform||'other'}</span></td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">${o.link}</td>
+      <td>${parseInt(o.quantity).toLocaleString()}</td>
+      <td>GHS ${parseFloat(o.cost).toFixed(2)}</td>
+      <td><span class="badge ${o.status}"><span class="bdot"></span>${o.status}</span></td>
+      <td style="white-space:nowrap">${new Date(o.created_at).toLocaleDateString()}</td>
+    </tr>`).join('');
+  const pending=myOrders.filter(o=>['pending','processing'].includes(o.status)).length;
+  $('pendingBadge').textContent=pending;
+}
+
+// ─── DASHBOARD ────────────────────────────────
+async function loadDashboard(){ await loadOrders(); }
+
+function updateDashStats(){
+  const total=myOrders.length;
+  const comp=myOrders.filter(o=>o.status==='completed').length;
+  const pend=myOrders.filter(o=>['pending','processing'].includes(o.status)).length;
+  $('s-total').textContent=total;
+  $('s-comp').textContent=comp;
+  $('s-pend').textContent=pend;
+  $('s-rate').textContent=(total?Math.round(comp/total*100):0)+'% success';
+  setWallet(me?.wallet||0);
+  const recent=myOrders.slice(0,5);
+  $('recentTbl').innerHTML=recent.length
+    ?recent.map(o=>`
+      <tr>
+        <td><code style="color:var(--accent2);font-size:12px">${o.order_id}</code></td>
+        <td>${o.service_name}</td>
+        <td><span class="pt ${o.platform||'other'}">${o.platform||'other'}</span></td>
+        <td>${parseInt(o.quantity).toLocaleString()}</td>
+        <td>GHS ${parseFloat(o.cost).toFixed(2)}</td>
+        <td><span class="badge ${o.status}"><span class="bdot"></span>${o.status}</span></td>
+      </tr>`).join('')
+    :'<tr><td colspan="6"><div class="empty"><div class="empty-ico">📭</div>No orders yet</div></td></tr>';
+}
+
+// ─── WALLET ───────────────────────────────────
+async function loadWallet(){
+  if(!me)return;
+  const {data}=await sb.from('profiles').select('wallet').eq('id',me.id).single();
+  if(data){me.wallet=data.wallet; setWallet(me.wallet);}
+  await loadTx();
+}
+
+async function loadTx(){
+  if(!me)return;
+  const {data}=await sb.from('transactions').select('*').eq('user_id',me.id).order('created_at',{ascending:false}).limit(50);
+  const txs=data||[];
+  $('txTbl').innerHTML=txs.length
+    ?txs.map(t=>`
+      <tr>
+        <td>${new Date(t.created_at).toLocaleDateString()}</td>
+        <td>${t.description}</td>
+        <td style="color:${t.type==='credit'?'var(--success)':'var(--danger)'}">${t.type==='credit'?'+':'-'}GHS ${Math.abs(parseFloat(t.amount)).toFixed(2)}</td>
+        <td><span class="badge ${t.type==='credit'?'completed':'cancelled'}">${t.type.toUpperCase()}</span></td>
+        <td>GHS ${parseFloat(t.balance_after).toFixed(2)}</td>
+      </tr>`).join('')
+    :'<tr><td colspan="5"><div class="empty"><div class="empty-ico">📄</div>No transactions yet</div></td></tr>';
+}
+
+$('topupOpenBtn').addEventListener('click',()=>openModal('topupModal'));
+$('walTopupBtn').addEventListener('click',()=>openModal('topupModal'));
+$('topupClose').addEventListener('click',()=>closeModal('topupModal'));
+$('refreshTxBtn').addEventListener('click',loadTx);
+
+document.querySelectorAll('.topup-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{$('topupAmt').value=opt.dataset.amount; openModal('topupModal');});
+});
+
+$('payBtn').addEventListener('click',async()=>{
+  const amount=parseFloat($('topupAmt').value)||0;
+  if(amount<5){toast('Minimum top-up is GHS 5','error');return;}
+  setBtn('payBtn',true,'Pay with Paystack');
+  try {
+    const handler=PaystackPop.setup({
+      key:PS_KEY,
+      email:me.email,
+      amount:Math.round(amount*100),
+      currency:'GHS',
+      ref:'TB_'+Date.now()+'_'+me.id,
+      callback:async function(response){
+        // Credit wallet
+        const bonus=amount>=1000?120:amount>=500?50:amount>=200?15:amount>=100?5:0;
+        const credited=amount+bonus;
+        const newBal=parseFloat(me.wallet||0)+credited;
+        await dbUpdateWhere('profiles','id',me.id,{wallet:newBal});
+        await sb.from('transactions').insert({
+          user_id:me.id,
+          description:'Wallet Top-Up via Paystack'+(bonus>0?` (+GHS ${bonus} bonus)`:''),
+          amount:credited, type:'credit', balance_after:newBal, ref:response.reference
+        });
+        me.wallet=newBal; setWallet(newBal);
+        closeModal('topupModal');
+        toast(`GHS ${credited.toFixed(2)} credited to wallet!`,'success');
+        loadTx();
+      },
+      onClose:function(){toast('Payment window closed','info');}
+    });
+    handler.openIframe();
+  } catch(e){
+    toast('Paystack error: '+e.message,'error');
+  }
+  setBtn('payBtn',false,'Pay with Paystack');
+});
+
+// ─── API KEY PAGE ─────────────────────────────
+$('revealKeyBtn').addEventListener('click',()=>{
+  const el=$('apiKeyEl');
+  el.textContent=el.textContent.includes('•')?userApiKey:userApiKey.replace(/./g,'•');
+});
+$('copyKeyBtn').addEventListener('click',()=>{
+  navigator.clipboard.writeText(userApiKey).then(()=>toast('API key copied!','success'));
+});
+
+// ─── ADMIN ────────────────────────────────────
+async function loadAdminStats(){
+  if(me?.role!=='admin')return;
+  const [{count:uc},{count:oc},{data:od},{count:sc}]=await Promise.all([
+    sb.from('profiles').select('*',{count:'exact',head:true}),
+    sb.from('orders').select('*',{count:'exact',head:true}),
+    sb.from('orders').select('cost').eq('status','completed'),
+    sb.from('services').select('*',{count:'exact',head:true}).eq('active',true),
+  ]);
+  const rev=(od||[]).reduce((s,o)=>s+parseFloat(o.cost||0),0);
+  $('a-rev').textContent=rev.toFixed(2);
+  $('a-users').textContent=uc||0;
+  $('a-orders').textContent=oc||0;
+  $('a-svcs').textContent=sc||0;
+}
+
+$('adminTabs').addEventListener('click',e=>{
+  const btn=e.target.closest('.tab'); if(!btn)return;
+  document.querySelectorAll('#adminTabs .tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const tab=btn.dataset.atab;
+  ['overview','users','services','allorders'].forEach(t=>{
+    const el=$('adminPane-'+t); if(el)el.style.display=t===tab?'block':'none';
+  });
+  if(tab==='users')loadAdminUsers();
+  if(tab==='services')loadAdminSvcs();
+  if(tab==='allorders')loadAdminOrders();
+});
+
+async function loadAdminUsers(){
+  const {data}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+  $('a-usersTbl').innerHTML=(data||[]).map(u=>`
+    <tr><td>${u.name}</td><td>${u.email}</td><td>GHS ${parseFloat(u.wallet||0).toFixed(2)}</td>
+    <td>–</td><td>${new Date(u.created_at).toLocaleDateString()}</td></tr>`).join('')
+    ||'<tr><td colspan="5"><div class="empty">No users</div></td></tr>';
+}
+
+async function loadAdminSvcs(){
+  const {data}=await sb.from('services').select('*').eq('active',true).order('id');
+  $('a-svcsTbl').innerHTML=(data||[]).map(s=>`
+    <tr><td>${s.id}</td><td>${s.icon||'⚡'} ${s.name}</td><td><span class="pt ${s.platform}">${s.platform}</span></td>
+    <td>GHS ${parseFloat(s.rate).toFixed(4)}</td><td>${s.min_qty}</td><td>${s.max_qty}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="adminDelSvc(${s.id})">🗑</button></td></tr>`).join('')
+    ||'<tr><td colspan="7"><div class="empty">No services</div></td></tr>';
+}
+
+async function loadAdminOrders(){
+  const {data}=await sb.from('orders').select('*, profiles(name,email)').order('created_at',{ascending:false}).limit(100);
+  $('a-ordersTbl').innerHTML=(data||[]).map(o=>`
+    <tr><td><code style="color:var(--accent2);font-size:12px">${o.order_id}</code></td>
+    <td>${o.profiles?.name||'–'}</td><td>${o.service_name}</td>
+    <td>${parseInt(o.quantity).toLocaleString()}</td>
+    <td>GHS ${parseFloat(o.cost).toFixed(2)}</td>
+    <td><span class="badge ${o.status}"><span class="bdot"></span>${o.status}</span></td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-ghost btn-sm" onclick="adminSetStatus(${o.id},'completed')">✓</button>
+      <button class="btn btn-ghost btn-sm" onclick="adminSetStatus(${o.id},'cancelled')">✕</button>
+    </td></tr>`).join('')
+    ||'<tr><td colspan="7"><div class="empty">No orders</div></td></tr>';
+}
+
+window.adminSetStatus=async function(id,status){
+  await sb.from('orders').update({status}).eq('id',id);
+  toast('Order updated','success'); loadAdminOrders();
+};
+window.adminDelSvc=async function(id){
+  await sb.from('services').update({active:false}).eq('id',id);
+  toast('Service removed','info'); loadAdminSvcs(); loadServices();
+};
+
+$('addBalBtn').addEventListener('click',async()=>{
+  const email=$('a-email').value.trim();
+  const amount=parseFloat($('a-amt').value)||0;
+  if(!email||amount<=0){toast('Enter email and amount','error');return;}
+  const {data:user}=await sb.from('profiles').select('*').eq('email',email).single();
+  if(!user){toast('User not found','error');return;}
+  const newBal=parseFloat(user.wallet||0)+amount;
+  await dbUpdateWhere('profiles','email',email,{wallet:newBal});
+  await sb.from('transactions').insert({user_id:user.id,description:'Admin credit',amount,type:'credit',balance_after:newBal});
+  toast('GHS '+amount+' added to '+email,'success');
+});
+
+$('saveSvcBtn').addEventListener('click',async()=>{
+  const name=$('svc-name').value.trim();
+  const plat=$('svc-plat').value;
+  const rate=parseFloat($('svc-rate').value)||0;
+  const min=parseInt($('svc-min').value)||100;
+  const max=parseInt($('svc-max').value)||500000;
+  if(!name||!rate){toast('Fill in name and rate','error');return;}
+  const icons={tiktok:'🎵',instagram:'📸',youtube:'▶️',facebook:'👍',twitter:'🐦'};
+  await sb.from('services').insert({name,platform:plat,rate,min_qty:min,max_qty:max,icon:icons[plat]||'⚡',active:true});
+  toast('Service added!','success');
+  loadAdminSvcs(); loadServices();
+  $('svc-name').value=''; $('svc-rate').value='';
+});
+
+// ─── MODAL CLOSE ON BACKDROP ──────────────────
+document.querySelectorAll('.overlay').forEach(ov=>{
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open');});
+});
+
+})();
+</script>
+</body>
+</html>
