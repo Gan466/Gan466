@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TikBooster Admin - Enhanced</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* [KEEP ALL YOUR EXISTING STYLES - they remain the same] */
+:root{
+  --bg:#0a0a0f;--surface:#13131c;--card:#1a1a28;--border:#2a2a3d;
+  --accent:#fe2c55;--accent2:#25f4ee;--accent3:#9b59b6;
+  --text:#f0f0f5;--muted:#6b6b85;--success:#00e676;--warning:#ffab00;--danger:#ff1744;
+  --fh:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--surface);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+/* LOGIN */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at 30% 50%,rgba(254,44,85,.1),transparent 60%),var(--bg);}
+.login-box{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;margin:16px;}
+.login-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:8px;}
+.login-icon{width:44px;height:44px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.login-name{font-family:var(--fh);font-size:24px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.login-sub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:28px;}
+.login-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(254,44,85,.1);border:1px solid rgba(254,44,85,.2);color:var(--accent);padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;margin-bottom:20px;}
+
+/* LAYOUT */
+.app{display:flex;min-height:100vh;}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;}
+.sb-logo{padding:24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.sb-logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.sb-logo-text{font-family:var(--fh);font-size:18px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sb-badge{font-size:9px;background:var(--accent);color:#fff;padding:2px 6px;border-radius:4px;margin-left:4px;font-weight:700;}
+.nav{flex:1;padding:12px;overflow-y:auto;}
+.nav-sec{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;padding:8px 10px;margin-top:4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--muted);margin-bottom:1px;transition:.2s;user-select:none;}
+.nav-item:hover{background:var(--card);color:var(--text);}
+.nav-item.active{background:linear-gradient(135deg,rgba(254,44,85,.15),rgba(37,244,238,.06));color:var(--text);border:1px solid rgba(254,44,85,.2);}
+.nav-ico{font-size:15px;width:18px;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.sb-foot{padding:14px;border-top:1px solid var(--border);}
+.admin-chip{display:flex;align-items:center;gap:8px;padding:8px;background:var(--card);border-radius:9px;margin-bottom:8px;}
+.admin-av{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent3));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;}
+.admin-nm{font-size:12px;font-weight:600;}
+.admin-rl{font-size:10px;color:var(--accent);font-weight:600;}
+.logout-btn{width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px;border-radius:8px;cursor:pointer;font-size:12px;font-family:var(--fb);transition:.2s;}
+.logout-btn:hover{border-color:var(--danger);color:var(--danger);}
+
+/* MAIN */
+.main{margin-left:220px;flex:1;min-height:100vh;}
+.topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:50;}
+.topbar-title{font-family:var(--fh);font-size:17px;font-weight:700;flex:1;}
+.topbar-time{font-size:12px;color:var(--muted);}
+.content{padding:24px;}
+.page{display:none;}.page.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* BUTTONS */
+.btn{padding:8px 16px;border-radius:8px;font-family:var(--fb);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-primary{background:var(--accent);color:#fff;}.btn-primary:hover:not(:disabled){background:#e0203d;}
+.btn-success{background:var(--success);color:#000;}.btn-success:hover{opacity:.9;}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-ghost:hover{color:var(--text);border-color:var(--accent);}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger);}.btn-danger:hover{background:var(--danger);color:#fff;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.btn-full{width:100%;padding:12px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:0;right:0;width:70px;height:70px;border-radius:50%;opacity:.08;transform:translate(15px,-15px);}
+.s1::before{background:var(--accent)}.s2::before{background:var(--accent2)}.s3::before{background:var(--accent3)}.s4::before{background:var(--warning)}.s5::before{background:var(--success)}
+.stat-lbl{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.stat-val{font-family:var(--fh);font-size:24px;font-weight:800;}
+.stat-sub{font-size:10px;color:var(--success);margin-top:3px;}
+.stat-ico{position:absolute;top:18px;right:18px;font-size:20px;opacity:.5;}
+
+/* CARDS & FORMS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:18px;}
+.card-title{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.fg{margin-bottom:14px;}
+.fl{font-size:11px;color:var(--muted);margin-bottom:5px;display:block;font-weight:500;}
+.fi{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--fb);font-size:13px;outline:none;transition:.2s;}
+.fi:focus{border-color:var(--accent);}
+.fs{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--fb);font-size:13px;outline:none;}
+.checkbox-label{display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;}
+
+/* TABLE */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;overflow-x:auto;}
+.tbl-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.tbl-title{font-family:var(--fh);font-size:14px;font-weight:700;}
+.tbl-actions{display:flex;gap:8px;align-items:center;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--surface);}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+td{padding:12px 14px;font-size:12px;border-top:1px solid var(--border);vertical-align:middle;}
+tr:hover td{background:rgba(255,255,255,.015);}
+.check-col{width:30px;text-align:center;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge.completed{background:rgba(0,230,118,.1);color:var(--success);}
+.badge.pending{background:rgba(255,171,0,.1);color:var(--warning);}
+.badge.processing{background:rgba(37,244,238,.1);color:var(--accent2);}
+.badge.cancelled{background:rgba(255,23,68,.1);color:var(--danger);}
+.badge.admin{background:rgba(254,44,85,.15);color:var(--accent);}
+.badge.user{background:rgba(255,255,255,.05);color:var(--muted);}
+.bdot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.pt{display:inline-flex;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:600;}
+.pt.tiktok{background:rgba(254,44,85,.15);color:var(--accent);}
+.pt.instagram{background:rgba(155,89,182,.15);color:var(--accent3);}
+.pt.youtube{background:rgba(255,71,71,.15);color:#ff4747;}
+.pt.facebook{background:rgba(66,103,178,.15);color:#4267B2;}
+.pt.twitter{background:rgba(29,161,242,.15);color:#1da1f2;}
+.pt.other{background:rgba(255,255,255,.05);color:var(--muted);}
+
+/* TOAST */
+.toast-wrap{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;display:flex;align-items:center;gap:8px;animation:slideIn .3s ease;box-shadow:0 8px 30px rgba(0,0,0,.4);min-width:240px;transition:opacity .3s;}
+.toast.success{border-left:3px solid var(--success);}.toast.error{border-left:3px solid var(--danger);}.toast.info{border-left:3px solid var(--accent2);}
+@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* MISC */
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+.empty-ico{font-size:36px;margin-bottom:8px;}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;vertical-align:middle;margin-right:4px;}
+@keyframes rot{to{transform:rotate(360deg)}}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.sec-title{font-family:var(--fh);font-size:15px;font-weight:700;}
+.search-bar{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:var(--fb);font-size:12px;outline:none;width:200px;}
+.search-bar:focus{border-color:var(--accent);}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+.dot-green{background:var(--success);}.dot-yellow{background:var(--warning);}.dot-red{background:var(--danger);}
+.sys-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.sys-row:last-child{border-bottom:none;}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:8px;}
+.progress-fill{height:100%;background:var(--accent2);width:0%;transition:width .3s;}
+@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr;}.two-col,.three-col{grid-template-columns:1fr;}.sidebar{display:none;}.main{margin-left:0;}}
+</style>
+</head>
+<body>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="login-logo">
+        <div class="login-icon">🛠️</div>
+        <div class="login-name">TikBooster</div>
+      </div>
+      <div class="login-sub">Admin Control Panel</div>
+      <div style="text-align:center;margin-bottom:20px;">
+        <span class="login-badge">🔐 Admin Access Only</span>
+      </div>
+      <div class="fg"><label class="fl">Admin Email</label><input class="fi" type="email" id="lEmail" placeholder="admin@email.com"/></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="lPass" placeholder="••••••••"/></div>
+      <button class="btn btn-primary btn-full" id="loginBtn">Sign In to Admin Panel →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp" style="display:none;">
+  <div class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">🛠️</div>
+      <div class="sb-logo-text">Admin<span class="sb-badge">PRO</span></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-sec">Overview</div>
+      <div class="nav-item active" data-page="dashboard"><span class="nav-ico">📊</span>Dashboard</div>
+      <div class="nav-sec">Management</div>
+      <div class="nav-item" data-page="users"><span class="nav-ico">👥</span>Users<span class="nav-badge" id="userCount">0</span></div>
+      <div class="nav-item" data-page="orders"><span class="nav-ico">📦</span>Orders<span class="nav-badge" id="orderCount">0</span></div>
+      <div class="nav-item" data-page="services"><span class="nav-ico">⚡</span>Services</div>
+      <div class="nav-sec">Finance</div>
+      <div class="nav-item" data-page="transactions"><span class="nav-ico">💳</span>Transactions</div>
+      <div class="nav-item" data-page="balance"><span class="nav-ico">💰</span>Add Balance</div>
+      <div class="nav-sec">System</div>
+      <div class="nav-item" data-page="settings"><span class="nav-ico">⚙️</span>Settings</div>
+      <div class="nav-item" data-page="audit"><span class="nav-ico">📜</span>Audit Log</div>
+    </nav>
+    <div class="sb-foot">
+      <div class="admin-chip">
+        <div class="admin-av" id="adminAv">A</div>
+        <div><div class="admin-nm" id="adminNm">Admin</div><div class="admin-rl">Super Admin</div></div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">🚪 Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="topbar-time" id="clock"></div>
+        <span style="font-size:11px;color:var(--success);">● Live</span>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD (same as before) -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat s1"><div class="stat-lbl">Total Revenue</div><div class="stat-val">GHS <span id="d-rev">0</span></div><div class="stat-sub">All completed orders</div><div class="stat-ico">💵</div></div>
+          <div class="stat s2"><div class="stat-lbl">Total Users</div><div class="stat-val" id="d-users">0</div><div class="stat-sub">Registered accounts</div><div class="stat-ico">👥</div></div>
+          <div class="stat s3"><div class="stat-lbl">Total Orders</div><div class="stat-val" id="d-orders">0</div><div class="stat-sub">All time</div><div class="stat-ico">📦</div></div>
+          <div class="stat s4"><div class="stat-lbl">Pending Orders</div><div class="stat-val" id="d-pending">0</div><div class="stat-sub">Needs attention</div><div class="stat-ico">⏳</div></div>
+        </div>
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="stat s5"><div class="stat-lbl">Completed Orders</div><div class="stat-val" id="d-comp">0</div><div class="stat-sub" id="d-rate">0% success rate</div><div class="stat-ico">✅</div></div>
+          <div class="stat s1"><div class="stat-lbl">Active Services</div><div class="stat-val" id="d-svcs">0</div><div class="stat-sub">Available to users</div><div class="stat-ico">⚡</div></div>
+          <div class="stat s2"><div class="stat-lbl">Total Deposited</div><div class="stat-val">GHS <span id="d-dep">0</span></div><div class="stat-sub">Via Paystack</div><div class="stat-ico">💳</div></div>
+        </div>
+        <div class="two-col">
+          <div class="tbl-wrap">
+            <div class="tbl-hdr"><div class="tbl-title">Recent Orders</div><button class="btn btn-ghost btn-sm" onclick="navigateTo('orders')">View All</button></div>
+            <table><thead><tr><th>ID</th><th>Service</th><th>Cost</th><th>Status</th></tr></thead><tbody id="d-recentOrders"></tbody></table>
+          </div>
+          <div class="tbl-wrap">
+            <div class="tbl-hdr"><div class="tbl-title">Recent Users</div><button class="btn btn-ghost btn-sm" onclick="navigateTo('users')">View All</button></div>
+            <table><thead><tr><th>Name</th><th>Email</th><th>Balance</th></tr></thead><tbody id="d-recentUsers"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS (with checkboxes for bulk actions) -->
+      <div class="page" id="page-users">
+        <div class="sec-hdr">
+          <div class="sec-title">All Users</div>
+          <div style="display:flex;gap:8px;">
+            <input class="search-bar" id="userSearch" placeholder="🔍 Search by name or email..."/>
+            <button class="btn btn-primary btn-sm" id="exportUsersBtn">📥 Export CSV</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-hdr">
+            <div class="tbl-actions">
+              <label class="checkbox-label"><input type="checkbox" id="selectAllUsers"/> Select All</label>
+              <button class="btn btn-success btn-sm" id="bulkAddBalanceBtn" style="display:none;">💰 Bulk Add Balance</button>
+            </div>
+          </div>
+          <table><thead><tr><th class="check-col"></th><th>#</th><th>Name</th><th>Email</th><th>Balance</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="usersTbl"></tbody></table>
+          <div id="bulkBalancePanel" style="display:none;padding:16px;border-top:1px solid var(--border);">
+            <div class="two-col">
+              <div class="fg"><label class="fl">Amount per user (GHS)</label><input class="fi" type="number" id="bulkAmount" placeholder="10"/></div>
+              <div class="fg"><label class="fl">Note</label><input class="fi" id="bulkNote" placeholder="Bonus credit"/></div>
+            </div>
+            <button class="btn btn-primary" id="confirmBulkAdd">Confirm Bulk Add</button>
+            <button class="btn btn-ghost" id="cancelBulkAdd">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORDERS (with checkboxes for bulk status update) -->
+      <div class="page" id="page-orders">
+        <div class="sec-hdr">
+          <div class="sec-title">All Orders</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <select class="fs" style="width:auto;padding:7px 10px;font-size:12px;" id="orderStatusFilter">
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" id="refreshOrdersBtn">🔄 Refresh</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-hdr">
+            <div class="tbl-actions">
+              <label class="checkbox-label"><input type="checkbox" id="selectAllOrders"/> Select All</label>
+              <select class="fs" style="width:auto;padding:5px 10px;font-size:11px;" id="bulkStatusSelect">
+                <option value="">Bulk Update →</option>
+                <option value="completed">✓ Completed</option>
+                <option value="processing">▶ Processing</option>
+                <option value="cancelled">✕ Cancelled</option>
+              </select>
+              <button class="btn btn-primary btn-sm" id="applyBulkStatus">Apply</button>
+            </div>
+          </div>
+          <table><thead><tr><th class="check-col"></th><th>Order ID</th><th>User</th><th>Service</th><th>Platform</th><th>Qty</th><th>Cost</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="ordersTbl"></tbody></table>
+        </div>
+      </div>
+
+      <!-- SERVICES (same as before) -->
+      <div class="page" id="page-services">
+        <div class="sec-hdr">
+          <div class="sec-title">Services</div>
+          <button class="btn btn-primary btn-sm" id="toggleAddSvc">+ Add Service</button>
+        </div>
+        <div class="card" id="addSvcCard" style="display:none;">
+          <div class="card-title">➕ New Service</div>
+          <div class="two-col">
+            <div class="fg"><label class="fl">Service Name</label><input class="fi" id="svc-name" placeholder="TikTok Followers"/></div>
+            <div class="fg"><label class="fl">Platform</label><select class="fs" id="svc-plat"><option value="tiktok">TikTok</option><option value="instagram">Instagram</option><option value="youtube">YouTube</option><option value="facebook">Facebook</option><option value="twitter">Twitter</option></select></div>
+            <div class="fg"><label class="fl">Rate per 1000 (GHS)</label><input class="fi" type="number" id="svc-rate" placeholder="0.50"/></div>
+            <div class="fg"><label class="fl">Min Order</label><input class="fi" type="number" id="svc-min" placeholder="100"/></div>
+            <div class="fg"><label class="fl">Max Order</label><input class="fi" type="number" id="svc-max" placeholder="500000"/></div>
+            <div class="fg"><label class="fl">Icon (emoji)</label><input class="fi" id="svc-icon" placeholder="👥"/></div>
+          </div>
+          <button class="btn btn-primary" id="saveSvcBtn">Save Service</button>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>ID</th><th>Service</th><th>Platform</th><th>Rate/1K</th><th>Min</th><th>Max</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="svcsTbl"></tbody></table>
+        </div>
+      </div>
+
+      <!-- TRANSACTIONS (same) -->
+      <div class="page" id="page-transactions">
+        <div class="sec-hdr"><div class="sec-title">All Transactions</div><button class="btn btn-ghost btn-sm" id="refreshTxBtn">🔄 Refresh</button></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Date</th><th>User</th><th>Description</th><th>Amount</th><th>Type</th><th>Balance After</th></tr></thead>
+          <tbody id="txTbl"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ADD BALANCE / UPDATE ORDER -->
+      <div class="page" id="page-balance">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">💰 Add Balance to User</div>
+            <div class="fg"><label class="fl">User Email</label><input class="fi" id="bal-email" placeholder="user@email.com"/></div>
+            <div class="fg"><label class="fl">Amount (GHS)</label><input class="fi" type="number" id="bal-amount" placeholder="50"/></div>
+            <div class="fg"><label class="fl">Note (optional)</label><input class="fi" id="bal-note" placeholder="Bonus credit, refund..."/></div>
+            <button class="btn btn-primary" id="addBalBtn">Add Balance</button>
+          </div>
+          <div class="card">
+            <div class="card-title">🔧 Update Order Status</div>
+            <div class="fg"><label class="fl">Order ID</label><input class="fi" id="upd-order" placeholder="TB123456"/></div>
+            <div class="fg"><label class="fl">New Status</label><select class="fs" id="upd-status"><option value="pending">Pending</option><option value="processing">Processing</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div>
+            <button class="btn btn-primary" id="updateOrderBtn">Update Order</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📢 Broadcast Message</div>
+          <div class="fg"><label class="fl">Message to all users</label><input class="fi" id="broadcast-msg" placeholder="System maintenance at 2AM..."/></div>
+          <button class="btn btn-primary" id="sendBroadcastBtn">Send Broadcast</button>
+          <div class="progress-bar" id="broadcastProgress" style="display:none;"><div class="progress-fill" id="broadcastFill"></div></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS (with rate limiting display) -->
+      <div class="page" id="page-settings">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">🔗 System Status</div>
+            <div class="sys-row"><span>Supabase Database</span><span><span class="status-dot dot-green"></span>Connected</span></div>
+            <div class="sys-row"><span>Paystack Gateway</span><span><span class="status-dot dot-green"></span>Live Mode</span></div>
+            <div class="sys-row"><span>Auth System</span><span><span class="status-dot dot-green"></span>Active</span></div>
+            <div class="sys-row"><span>Order Processing</span><span><span class="status-dot dot-green"></span>Running</span></div>
+            <div class="sys-row"><span>Vercel Hosting</span><span><span class="status-dot dot-green"></span>Online</span></div>
+            <div class="sys-row"><span>Rate Limiting</span><span><span class="status-dot dot-green"></span>Active (2s cooldown)</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">📊 Quick Stats</div>
+            <div class="sys-row"><span>Supabase Plan</span><span style="color:var(--accent2)">Free</span></div>
+            <div class="sys-row"><span>Vercel Plan</span><span style="color:var(--accent2)">Hobby (Free)</span></div>
+            <div class="sys-row"><span>Max Users</span><span style="color:var(--success)">50,000/month</span></div>
+            <div class="sys-row"><span>Paystack Currency</span><span style="color:var(--success)">GHS (Live)</span></div>
+            <div class="sys-row"><span>Admin Email</span><span style="color:var(--muted);font-size:11px">wemegahr2@gmail.com</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚠️ Danger Zone</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-danger btn-sm" id="cancelAllPendingBtn">Cancel All Pending Orders</button>
+            <button class="btn btn-danger btn-sm" id="deleteTestUsersBtn">Delete Test Users</button>
+            <button class="btn btn-ghost btn-sm" onclick="window.open('https://supabase.com','_blank')">Open Supabase Dashboard</button>
+            <button class="btn btn-ghost btn-sm" onclick="window.open('https://vercel.com','_blank')">Open Vercel Dashboard</button>
+            <button class="btn btn-ghost btn-sm" onclick="window.open('https://dashboard.paystack.com','_blank')">Open Paystack Dashboard</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIT LOG (new) -->
+      <div class="page" id="page-audit">
+        <div class="sec-hdr">
+          <div class="sec-title">Admin Activity Log</div>
+          <button class="btn btn-ghost btn-sm" id="refreshAuditBtn">🔄 Refresh</button>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Target</th></tr></thead>
+          <tbody id="auditTbl"></tbody></table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+'use strict';
+
+const SB_URL = 'https://hjhjjswfimxtggwgluno.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqaGpqc3dmaW14dGdnd2dsdW5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDA5MDEsImV4cCI6MjA5MTAxNjkwMX0.YdQnf91xTxsiMKgmSdyWvZpPuu80jMYnGDtiboH7tY8';
+const ADMIN_EMAIL = 'wemegahr2@gmail.com';
+
+const sb = supabase.createClient(SB_URL, SB_KEY);
+const $ = id => document.getElementById(id);
+let me = null, allUsers = [], allOrders = [], allSvcs = [], selectedUsers = [], selectedOrders = [];
+let lastActionTime = 0;
+
+// Rate limiting helper
+async function rateLimitCheck(actionName) {
+  const now = Date.now();
+  if (now - lastActionTime < 2000) {
+    toast(`Please wait before performing another ${actionName}`, 'error');
+    return false;
+  }
+  lastActionTime = now;
+  return true;
+}
+
+// Audit log
+async function logAction(action, target, details = '') {
+  const adminEmail = me?.email || ADMIN_EMAIL;
+  const { error } = await sb.from('admin_logs').insert({
+    admin_email: adminEmail,
+    action: action,
+    target: target,
+    details: details,
+    created_at: new Date().toISOString()
+  });
+  if (error) console.error('Audit log error:', error);
+}
+
+// ── HELPERS ──────────────────────────────────
+function toast(msg, type='info'){
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span>${icons[type]}</span><span>${msg}</span>`;
+  $('toastWrap').appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';},3000);
+  setTimeout(()=>el.remove(),3300);
+}
+
+function setBtn(id,loading,text){
+  const b=$(id);if(!b)return;
+  b.disabled=loading;
+  b.innerHTML=loading?`<span class="spin"></span>${text}...`:text;
+}
+
+function timeAgo(dateStr){
+  if(!dateStr)return '';
+  const diff=(Date.now()-new Date(dateStr))/1000;
+  if(diff<60)return 'just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  return new Date(dateStr).toLocaleDateString();
+}
+
+// Clock
+setInterval(()=>{
+  const now=new Date();
+  const el=$('clock');
+  if(el)el.textContent=now.toLocaleTimeString();
+},1000);
+
+// ── AUTH ─────────────────────────────────────
+$('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+$('loginBtn').addEventListener('click',doLogin);
+
+async function doLogin(){
+  const email=$('lEmail').value.trim();
+  const pass=$('lPass').value;
+  if(!email||!pass){toast('Enter email and password','error');return;}
+  if(email!==ADMIN_EMAIL){toast('Access denied — not an admin email','error');return;}
+  setBtn('loginBtn',true,'Sign In to Admin Panel →');
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  setBtn('loginBtn',false,'Sign In to Admin Panel →');
+  if(error){toast(error.message||'Login failed','error');return;}
+  const {data:profile}=await sb.from('profiles').select('role,name,email').eq('id',data.user.id).single();
+  if(!profile||profile.role!=='admin'){
+    await sb.auth.signOut();
+    toast('Access denied — admin only','error');
+    return;
+  }
+  me=profile;
+  bootAdmin(data.user);
+  await logAction('Admin Login', email, 'Successful login');
+}
+
+function bootAdmin(user){
+  $('loginScreen').style.display='none';
+  $('adminApp').style.display='flex';
+  $('adminNm').textContent=me?.name||user.email.split('@')[0];
+  $('adminAv').textContent=(me?.name||'A').charAt(0).toUpperCase();
+  loadDashboard();
+  loadAuditLog();
+}
+
+$('logoutBtn').addEventListener('click',async()=>{
+  await logAction('Admin Logout', me?.email || ADMIN_EMAIL, 'User signed out');
+  await sb.auth.signOut();
+  $('adminApp').style.display='none';
+  $('loginScreen').style.display='block';
+  toast('Signed out','info');
+});
+
+// Check existing session
+sb.auth.getSession().then(async({data})=>{
+  if(data.session){
+    const {data:profile}=await sb.from('profiles').select('role,name,email').eq('id',data.session.user.id).single();
+    if(profile?.role==='admin'){me=profile;bootAdmin(data.session.user);}
+  }
+});
+
+// ── NAVIGATION ───────────────────────────────
+const titles={dashboard:'Dashboard',users:'User Management',orders:'Order Management',services:'Service Management',transactions:'Transactions',balance:'Add Balance / Update Orders',settings:'System Settings',audit:'Audit Log'};
+
+document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
+  item.addEventListener('click',()=>navigateTo(item.dataset.page));
+});
+
+function navigateTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=$('page-'+page);if(pg)pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const ni=document.querySelector(`.nav-item[data-page="${page}"]`);if(ni)ni.classList.add('active');
+  $('pageTitle').textContent=titles[page]||page;
+  if(page==='dashboard')loadDashboard();
+  if(page==='users')loadUsers();
+  if(page==='orders')loadOrders();
+  if(page==='services')loadServices();
+  if(page==='transactions')loadTransactions();
+  if(page==='audit')loadAuditLog();
+}
+
+// ── DASHBOARD ────────────────────────────────
+async function loadDashboard(){
+  const [
+    {count:uc},{count:oc},{count:pc},{count:cc},{count:sc},
+    {data:revData},{data:depData}
+  ]=await Promise.all([
+    sb.from('profiles').select('*',{count:'exact',head:true}),
+    sb.from('orders').select('*',{count:'exact',head:true}),
+    sb.from('orders').select('*',{count:'exact',head:true}).in('status',['pending','processing']),
+    sb.from('orders').select('*',{count:'exact',head:true}).eq('status','completed'),
+    sb.from('services').select('*',{count:'exact',head:true}).eq('active',true),
+    sb.from('orders').select('cost').eq('status','completed'),
+    sb.from('transactions').select('amount').eq('type','credit'),
+  ]);
+  const rev=(revData||[]).reduce((s,o)=>s+parseFloat(o.cost||0),0);
+  const dep=(depData||[]).reduce((s,t)=>s+parseFloat(t.amount||0),0);
+  $('d-rev').textContent=rev.toFixed(2);
+  $('d-users').textContent=uc||0;
+  $('d-orders').textContent=oc||0;
+  $('d-pending').textContent=pc||0;
+  $('d-comp').textContent=cc||0;
+  $('d-svcs').textContent=sc||0;
+  $('d-dep').textContent=dep.toFixed(2);
+  $('d-rate').textContent=(oc?Math.round(cc/oc*100):0)+'% success rate';
+  $('userCount').textContent=uc||0;
+  $('orderCount').textContent=pc||0;
+
+  const {data:ro}=await sb.from('orders').select('order_id,service_name,cost,status,created_at').order('created_at',{ascending:false}).limit(5);
+  $('d-recentOrders').innerHTML=(ro||[]).map(o=>`
+    <tr><td><code style="color:var(--accent2);font-size:11px">${o.order_id}</code></td>
+    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.service_name}</td>
+    <td>GHS ${parseFloat(o.cost).toFixed(2)}</td>
+    <td><span class="badge ${o.status}"><span class="bdot"></span>${o.status}</span></td>
+    </tr>`).join('')||'<tr><td colspan="4"><div class="empty">No orders yet</div></td></tr>';
+
+  const {data:ru}=await sb.from('profiles').select('name,email,wallet').order('created_at',{ascending:false}).limit(5);
+  $('d-recentUsers').innerHTML=(ru||[]).map(u=>`
+    <tr><td>${u.name}</td>
+    <td style="font-size:11px;color:var(--muted)">${u.email}</td>
+    <td>GHS ${parseFloat(u.wallet||0).toFixed(2)}</td>
+    </tr>`).join('')||'<tr><td colspan="3"><div class="empty">No users yet</div></td></tr>';
+}
+
+// ── USERS (with bulk actions) ─────────────────
+async function loadUsers(){
+  const {data}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+  allUsers=data||[];
+  renderUsers(allUsers);
+}
+
+function renderUsers(list){
+  $('usersTbl').innerHTML=list.map((u,i)=>`
+    <tr>
+      <td class="check-col"><input type="checkbox" class="userCheck" value="${u.id}" data-email="${u.email}"></td>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td><strong>${u.name}</strong></td>
+      <td style="font-size:11px;color:var(--muted)">${u.email}</td>
+      <td><strong style="color:var(--accent2)">GHS ${parseFloat(u.wallet||0).toFixed(2)}</strong></td>
+      <td><span class="badge ${u.role}">${u.role}</span></td>
+      <td style="font-size:11px;color:var(--muted)">${timeAgo(u.created_at)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="quickAddBal('${u.email}')">+ Balance</button>
+        ${u.role!=='admin'?`<button class="btn btn-ghost btn-sm" onclick="makeAdmin('${u.id}','${u.email}')">Make Admin</button>`:''}
+       </td>
+    </tr>`).join('')||'<tr><td colspan="8"><div class="empty">No users yet</div></td></tr>';
+  
+  // Bulk select handlers
+  const selectAll = $('#selectAllUsers');
+  const checkboxes = document.querySelectorAll('.userCheck');
+  const bulkPanel = $('#bulkBalancePanel');
+  const bulkBtn = $('#bulkAddBalanceBtn');
+  
+  if(selectAll){
+    selectAll.onchange = () => {
+      checkboxes.forEach(cb => cb.checked = selectAll.checked);
+      updateSelectedUsers();
+    };
+  }
+  checkboxes.forEach(cb => cb.onchange = () => updateSelectedUsers());
+}
+
+function updateSelectedUsers(){
+  selectedUsers = Array.from(document.querySelectorAll('.userCheck:checked')).map(cb => ({
+    id: cb.value,
+    email: cb.dataset.email
+  }));
+  const bulkBtn = $('#bulkAddBalanceBtn');
+  if(bulkBtn){
+    if(selectedUsers.length > 0){
+      bulkBtn.style.display = 'inline-flex';
+      bulkBtn.textContent = `💰 Bulk Add Balance (${selectedUsers.length} users)`;
+    } else {
+      bulkBtn.style.display = 'none';
+    }
+  }
+}
+
+$('#bulkAddBalanceBtn')?.addEventListener('click', () => {
+  $('#bulkBalancePanel').style.display = 'block';
+});
+
+$('#cancelBulkAdd')?.addEventListener('click', () => {
+  $('#bulkBalancePanel').style.display = 'none';
+});
+
+$('#confirmBulkAdd')?.addEventListener('click', async () => {
+  const amount = parseFloat($('#bulkAmount').value) || 0;
+  const note = $('#bulkNote').value.trim() || 'Bulk admin credit';
+  if(amount <= 0){toast('Enter a valid amount','error');return;}
+  if(!await rateLimitCheck('bulk balance add')) return;
+  
+  setBtn('confirmBulkAdd', true, 'Processing');
+  let success = 0;
+  for(const user of selectedUsers){
+    const {data:userData} = await sb.from('profiles').select('wallet').eq('id',user.id).single();
+    const newBal = parseFloat(userData?.wallet || 0) + amount;
+    await sb.from('profiles').update({wallet: newBal}).eq('id',user.id);
+    await sb.from('transactions').insert({
+      user_id: user.id,
+      description: note,
+      amount: amount,
+      type: 'credit',
+      balance_after: newBal
+    });
+    success++;
+  }
+  await logAction('Bulk Balance Add', `${success} users`, `Added GHS ${amount} each. Note: ${note}`);
+  setBtn('confirmBulkAdd', false, 'Confirm Bulk Add');
+  $('#bulkBalancePanel').style.display = 'none';
+  toast(`Added GHS ${amount} to ${success} users`, 'success');
+  loadUsers();
+  loadTransactions();
+});
+
+$('#exportUsersBtn')?.addEventListener('click', () => {
+  const csv = allUsers.map(u => `${u.email},${u.name},${u.wallet},${u.role},${u.created_at}`).join('\n');
+  const blob = new Blob(['Email,Name,Balance,Role,Created\n' + csv], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `users_${new Date().toISOString().slice(0,19)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Users exported!', 'success');
+});
+
+window.quickAddBal = function(email){
+  navigateTo('balance');
+  $('bal-email').value = email;
+  $('bal-amount').focus();
+};
+
+window.makeAdmin = async function(id, email){
+  if(!confirm(`Make ${email} an admin? They will have full access.`)) return;
+  await sb.from('profiles').update({role:'admin'}).eq('id',id);
+  await logAction('Make Admin', email, 'User promoted to admin');
+  toast(`${email} is now admin`, 'success');
+  loadUsers();
+};
+
+// ── ORDERS (with bulk status update) ──────────
+async function loadOrders(){
+  const {data}=await sb.from('orders').select('*, profiles(name,email)').order('created_at',{ascending:false}).limit(200);
+  allOrders=data||[];
+  renderOrders(allOrders);
+}
+
+function renderOrders(list){
+  $('ordersTbl').innerHTML=list.map(o=>`
+    <tr>
+      <td class="check-col"><input type="checkbox" class="orderCheck" value="${o.id}"></td>
+      <td><code style="color:var(--accent2);font-size:11px">${o.order_id}</code></td>
+      <td style="font-size:11px">${o.profiles?.name||'–'}<br><span style="color:var(--muted)">${o.profiles?.email||''}</span></td>
+      <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.service_name}</td>
+      <td><span class="pt ${o.platform||'other'}">${o.platform||'other'}</span></td>
+      <td>${parseInt(o.quantity).toLocaleString()}</td>
+      <td><strong>GHS ${parseFloat(o.cost).toFixed(2)}</strong></td>
+      <td><span class="badge ${o.status}"><span class="bdot"></span>${o.status}</span></td>
+      <td style="font-size:11px;color:var(--muted);white-space:nowrap">${timeAgo(o.created_at)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-success btn-sm" onclick="setOrderStatus('${o.id}','completed')">✓</button>
+        <button class="btn btn-ghost btn-sm" onclick="setOrderStatus('${o.id}','processing')">▶</button>
+        <button class="btn btn-danger btn-sm" onclick="setOrderStatus('${o.id}','cancelled')">✕</button>
+       </td>
+    </tr>`).join('')||'<tr><td colspan="10"><div class="empty">No orders</div></td></tr>';
+  
+  // Bulk select handlers
+  const selectAll = $('#selectAllOrders');
+  const checkboxes = document.querySelectorAll('.orderCheck');
+  if(selectAll){
+    selectAll.onchange = () => {
+      checkboxes.forEach(cb => cb.checked = selectAll.checked);
+      selectedOrders = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+    };
+  }
+  checkboxes.forEach(cb => cb.onchange = () => {
+    selectedOrders = Array.from(document.querySelectorAll('.orderCheck:checked')).map(cb => cb.value);
+  });
+}
+
+$('#applyBulkStatus')?.addEventListener('click', async () => {
+  const newStatus = $('#bulkStatusSelect').value;
+  if(!newStatus || selectedOrders.length === 0){toast('Select orders and a status','error');return;}
+  if(!await rateLimitCheck('bulk order update')) return;
+  
+  for(const id of selectedOrders){
+    await sb.from('orders').update({status: newStatus}).eq('id',id);
+  }
+  await logAction('Bulk Order Update', `${selectedOrders.length} orders`, `Status changed to ${newStatus}`);
+  toast(`${selectedOrders.length} orders updated to ${newStatus}`, 'success');
+  loadOrders();
+  loadDashboard();
+});
+
+$('orderStatusFilter').addEventListener('change',e=>{
+  const f=e.target.value;
+  renderOrders(f==='all'?allOrders:allOrders.filter(o=>o.status===f));
+});
+
+$('refreshOrdersBtn').addEventListener('click',loadOrders);
+
+window.setOrderStatus = async function(id, status){
+  if(!await rateLimitCheck('order status update')) return;
+  await sb.from('orders').update({status}).eq('id',id);
+  await logAction('Order Status Update', `Order ${id}`, `Changed to ${status}`);
+  toast(`Order marked as ${status}`, 'success');
+  loadOrders();
+  loadDashboard();
+};
+
+// ── SERVICES (same as before) ─────────────────
+async function loadServices(){
+  const {data}=await sb.from('services').select('*').order('id');
+  allSvcs=data||[];
+  renderServices();
+}
+
+function renderServices(){
+  $('svcsTbl').innerHTML=allSvcs.map(s=>`
+    <tr>
+      <td style="color:var(--muted)">${s.id}</td>
+      <td>${s.icon||'⚡'} <strong>${s.name}</strong></td>
+      <td><span class="pt ${s.platform}">${s.platform}</span></td>
+      <td>GHS ${parseFloat(s.rate).toFixed(4)}</td>
+      <td>${parseInt(s.min_qty).toLocaleString()}</td>
+      <td>${parseInt(s.max_qty).toLocaleString()}</td>
+      <td><span class="badge ${s.active?'completed':'cancelled'}">${s.active?'Active':'Hidden'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="toggleSvc(${s.id},${s.active})">${s.active?'Hide':'Show'}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSvc(${s.id})">Delete</button>
+       </td>
+    </tr>`).join('')||'<tr><td colspan="8"><div class="empty">No services</div></td></tr>';
+}
+
+$('toggleAddSvc').addEventListener('click',()=>{
+  const c=$('addSvcCard');
+  c.style.display=c.style.display==='none'?'block':'none';
+});
+
+$('saveSvcBtn').addEventListener('click',async()=>{
+  const name=$('svc-name').value.trim();
+  const plat=$('svc-plat').value;
+  const rate=parseFloat($('svc-rate').value)||0;
+  const min=parseInt($('svc-min').value)||100;
+  const max=parseInt($('svc-max').value)||500000;
+  const icon=$('svc-icon').value.trim();
+  if(!name||!rate){toast('Name and rate are required','error');return;}
+  const icons={tiktok:'👥',instagram:'📸',youtube:'▶️',facebook:'👍',twitter:'🐦'};
+  setBtn('saveSvcBtn',true,'Save Service');
+  await sb.from('services').insert({name,platform:plat,rate,min_qty:min,max_qty:max,icon:icon||icons[plat]||'⚡',active:true});
+  setBtn('saveSvcBtn',false,'Save Service');
+  await logAction('Add Service', name, `Platform: ${plat}, Rate: ${rate}`);
+  toast('Service added!','success');
+  $('svc-name').value=''; $('svc-rate').value=''; $('svc-icon').value='';
+  $('addSvcCard').style.display='none';
+  loadServices();
+});
+
+window.toggleSvc=async function(id,active){
+  await sb.from('services').update({active:!active}).eq('id',id);
+  await logAction('Toggle Service', `Service ${id}`, active ? 'Hidden' : 'Shown');
+  toast(active?'Service hidden':'Service visible','info');
+  loadServices();
+};
+
+window.deleteSvc=async function(id){
+  if(!confirm('Delete this service permanently?'))return;
+  await sb.from('services').delete().eq('id',id);
+  await logAction('Delete Service', `Service ${id}`, 'Permanently deleted');
+  toast('Service deleted','info');
+  loadServices();
+};
+
+// ── TRANSACTIONS ──────────────────────────────
+async function loadTransactions(){
+  const {data}=await sb.from('transactions').select('*, profiles(name,email)').order('created_at',{ascending:false}).limit(100);
+  $('txTbl').innerHTML=(data||[]).map(t=>`
+    <tr>
+      <td style="font-size:11px;color:var(--muted);white-space:nowrap">${timeAgo(t.created_at)}</td>
+      <td style="font-size:11px">${t.profiles?.name||'–'}<br><span style="color:var(--muted)">${t.profiles?.email||''}</span></td>
+      <td>${t.description}</td>
+      <td style="color:${t.type==='credit'?'var(--success)':'var(--danger)'}"><strong>${t.type==='credit'?'+':'-'}GHS ${Math.abs(parseFloat(t.amount)).toFixed(2)}</strong></td>
+      <td><span class="badge ${t.type==='credit'?'completed':'cancelled'}">${t.type}</span></td>
+      <td>GHS ${parseFloat(t.balance_after||0).toFixed(2)}</td>
+    </tr>`).join('')||'<tr><td colspan="6"><div class="empty">No transactions</div></td></tr>';
+}
+
+$('refreshTxBtn').addEventListener('click',loadTransactions);
+
+// ── BALANCE & ORDER UPDATE ───────────────────
+$('addBalBtn').addEventListener('click',async()=>{
+  const email=$('bal-email').value.trim();
+  const amount=parseFloat($('bal-amount').value)||0;
+  const note=$('bal-note').value.trim()||'Admin credit';
+  if(!email||amount<=0){toast('Enter email and amount','error');return;}
+  if(!await rateLimitCheck('balance addition')) return;
+  
+  setBtn('addBalBtn',true,'Add Balance');
+  const {data:user,error}=await sb.from('profiles').select('*').eq('email',email).single();
+  if(error||!user){setBtn('addBalBtn',false,'Add Balance');toast('User not found','error');return;}
+  const newBal=parseFloat(user.wallet||0)+amount;
+  await sb.from('profiles').update({wallet:newBal}).eq('email',email);
+  await sb.from('transactions').insert({user_id:user.id,description:note,amount,type:'credit',balance_after:newBal});
+  await logAction('Add Balance', email, `Added GHS ${amount}. Note: ${note}`);
+  setBtn('addBalBtn',false,'Add Balance');
+  toast(`GHS ${amount} added to ${email}`,'success');
+  $('bal-amount').value=''; $('bal-note').value='';
+});
+
+$('updateOrderBtn').addEventListener('click',async()=>{
+  const orderId=$('upd-order').value.trim().toUpperCase();
+  const status=$('upd-status').value;
+  if(!orderId){toast('Enter an order ID','error');return;}
+  const {error}=await sb.from('orders').update({status}).eq('order_id',orderId);
+  if(error){toast('Order not found','error');return;}
+  await logAction('Update Order', orderId, `Status changed to ${status}`);
+  toast(`Order ${orderId} → ${status}`,'success');
+  $('upd-order').value='';
+});
+
+// ── BROADCAST MESSAGE ────────────────────────
+$('sendBroadcastBtn').addEventListener('click',async()=>{
+  const message = $('#broadcast-msg').value.trim();
+  if(!message){toast('Enter a message','error');return;}
+  if(!await rateLimitCheck('broadcast')) return;
+  
+  setBtn('sendBroadcastBtn', true, 'Sending...');
+  $('#broadcastProgress').style.display = 'block';
+  const {data:users} = await sb.from('profiles').select('id');
+  const total = users.length;
+  let sent = 0;
+  
+  for(const user of users){
+    await sb.from('notifications').insert({
+      user_id: user.id,
+      message: message,
+      created_at: new Date().toISOString()
+    });
+    sent++;
+    const percent = (sent / total) * 100;
+    $('#broadcastFill').style.width = percent + '%';
+  }
+  await logAction('Broadcast', `${total} users`, message);
+  setBtn('sendBroadcastBtn', false, 'Send Broadcast');
+  setTimeout(() => {
+    $('#broadcastProgress').style.display = 'none';
+    $('#broadcastFill').style.width = '0%';
+  }, 2000);
+  toast(`Broadcast sent to ${total} users`, 'success');
+  $('#broadcast-msg').value = '';
+});
+
+// ── AUDIT LOG ────────────────────────────────
+async function loadAuditLog(){
+  const {data} = await sb.from('admin_logs').select('*').order('created_at', {ascending: false}).limit(100);
+  $('auditTbl').innerHTML = (data||[]).map(log => `
+    <tr>
+      <td style="white-space:nowrap">${timeAgo(log.created_at)}</td>
+      <td><span class="badge admin">${log.admin_email}</span></td>
+      <td><strong>${log.action}</strong></td>
+      <td style="font-size:11px;color:var(--muted)">${log.target} ${log.details ? `(${log.details})` : ''}</td>
+    </tr>`).join('') || '<tr><td colspan="4"><div class="empty">No audit logs yet</div></td></tr>';
+}
+
+$('refreshAuditBtn')?.addEventListener('click', loadAuditLog);
+
+// ── DANGER ZONE ──────────────────────────────
+$('cancelAllPendingBtn')?.addEventListener('click', async () => {
+  if(!confirm('Cancel ALL pending and processing orders? This cannot be undone.')) return;
+  if(!await rateLimitCheck('cancel all pending')) return;
+  await sb.from('orders').update({status:'cancelled'}).in('status',['pending','processing']);
+  await logAction('Cancel All Pending', 'All orders', 'Cancelled all pending/processing orders');
+  toast('All pending orders cancelled','info');
+  loadDashboard();
+  loadOrders();
+});
+
+$('deleteTestUsersBtn')?.addEventListener('click', async () => {
+  if(!confirm('Delete ALL test users? This will remove accounts with @temp.com or @test.com emails.')) return;
+  if(!await rateLimitCheck('delete test users')) return;
+  
+  const {data:testUsers} = await sb.from('profiles').select('id,email').ilike('email', '%@temp.com');
+  const testEmails = testUsers?.filter(u => u.email.includes('temp') || u.email.includes('test')) || [];
+  let deleted = 0;
+  for(const user of testEmails){
+    await sb.from('profiles').delete().eq('id', user.id);
+    deleted++;
+  }
+  await logAction('Delete Test Users', `${deleted} users`, 'Removed temporary test accounts');
+  toast(`Deleted ${deleted} test users`, 'success');
+  loadUsers();
+});
+
+// Create audit log table (run once)
+async function initAuditTable(){
+  await sb.query(`
+    CREATE TABLE IF NOT EXISTS admin_logs (
+      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+      admin_email TEXT,
+      action TEXT,
+      target TEXT,
+      details TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `).catch(e => console.log('Audit table may already exist'));
+}
+initAuditTable();
+
+})();
+</script>
+</body>
+</html>
